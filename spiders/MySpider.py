@@ -1,17 +1,15 @@
 import scrapy
 from demo.items import DemoItem
-import re
 
 
 class MySpider(scrapy.Spider):
 	name = 'DemoSpider'
-	start_urls = [
-	'https://feebee.com.tw/s/電風扇/?sort=d&mode=l&ptab=0&page=1',
-	'https://feebee.com.tw/s/電風扇/?sort=d&mode=l&ptab=0&page=2',
-	'https://feebee.com.tw/s/電風扇/?sort=d&mode=l&ptab=0&page=3',
-	'https://feebee.com.tw/s/電風扇/?sort=d&mode=l&ptab=0&page=4',
-	'https://feebee.com.tw/s/電風扇/?sort=d&mode=l&ptab=0&page=5'
-	]
+	findItem = input('請輸入產品名稱:')
+	findPage = input('請輸入查詢頁數:')
+	url = 'https://feebee.com.tw/s/' + findItem +'/?sort=d&mode=l&ptab=0&page='
+	start_urls = []
+	for i in range(1,int(findPage)+1):
+		start_urls.append(url+str(i))
 
 	def parse(self,response):
 		try:
@@ -22,7 +20,6 @@ class MySpider(scrapy.Spider):
 				item = DemoItem()
 				item['title'] = total.xpath('./span/a/h3/text()').extract()
 				item['price'] = total.xpath('./span/ul/li[@class = "price ellipsis xlarge"]/text()').extract()
-				#item['priceRange'] = total.xpath('./span/div[@class="product_group_price price ellipsis xlarge"]/text()').extract()
 				yield item
 		except Exception as err:
 			print(err)
